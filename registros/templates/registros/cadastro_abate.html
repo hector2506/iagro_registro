@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load crispy_forms_tags %}
+
+{% block extra_cdns %}
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+{% endblock %}
+
+
+{% block title %}Cadastro de Abate{% endblock %}
+
+{% block content %}
+
+<script>
+    const add_input = function(button_id) {
+        const sufix = button_id.replace("cortes-", "");
+        const input = `
+        <div class="row g-3" style="justify-content: space-between" name="array-${sufix}">
+            <div class="col">
+                <div id="div_id_corte" class="mb-3">
+                    <label for="id_corte" class="form-label"> Peso do Corte </label>
+                    <input type="number" name="peso-${sufix}" min="0.0" step="0.5" class="numberinput form-control peso-${sufix}">
+                </div>
+            </div>
+            <div class="col">
+                <div id="div_id_quantidade" class="mb-3">
+                    <label for="id_quantidade" class="form-label"> Quantidade de Cortes </label>
+                    <input type="number" name="quant-${sufix}" min="1" class="numberinput form-control quant-${sufix}">
+                </div>
+            </div>
+        </div>`;
+        $(`#${button_id}`).append(input);
+    }
+
+
+    $(document).ready(function(){
+        $("#id-abate-diario-form").on("submit",function(ev) {
+            const pesos_suinos = []
+            const pesos_carneiros = []
+
+            const size_suinos = $("[name='array-suinos']").length;
+            const cortes_suinos = Array.from($("input[name='peso-suinos']")).map(el => {
+                return el.value;
+            }).filter(Boolean);
+            const quant_suinos = Array.from($("input[name='quant-suinos']")).map(el => {
+                return el.value;
+            }).filter(Boolean);
+
+            const size_carneiros = $("[name='array-carneiros']").length;
+            const cortes_carneiros = Array.from($("input[name='peso-carneiros']")).map(el => {
+                return el.value;
+            }).filter(Boolean);
+            const quant_carneiros = Array.from($("input[name='quant-carneiros']")).map(el => {
+                return el.value;
+            }).filter(Boolean);
+
+            for (let i = 0; i < size_suinos; i++) {
+                if (cortes_suinos[i] && quant_suinos[i]){
+                    for (let j = 0; j < quant_suinos[i]; j++){
+                        pesos_suinos.push(cortes_suinos[i]);
+                    }
+                }
+            }
+
+            for (let i = 0; i < size_carneiros; i++) {
+                if (cortes_carneiros[i] && quant_carneiros[i]){
+                    for (let j = 0; j < quant_carneiros[i]; j++){
+                        pesos_carneiros.push(cortes_carneiros[i]);
+                    }
+                }
+            }
+
+            pesos_suinos.sort(function(a, b){return a - b});
+            pesos_carneiros.sort(function(a, b){return a - b});
+
+            $("#id_cortes_suinos").attr('value', pesos_suinos.join(","))
+            $("#id_cortes_carneiros").attr('value', pesos_carneiros.join(","))
+
+            return true;
+        })
+    });
+</script>
+
+
+<div class="container">
+    <div class="row my-5">
+        <div class="col-md-12">
+            {% csrf_token %}
+            {% crispy form %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

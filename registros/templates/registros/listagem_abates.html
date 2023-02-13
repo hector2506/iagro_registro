@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Listagem de Abates Diários{% endblock %}
+
+{% block content %}
+{% if abate_lista %}
+{% for abate_diario in abate_lista %}
+<ul>
+    <h3>Cortes {{abate_diario.dia}}:</h3>
+    <ul>
+        <p>Cortes Suínos:</p>
+    {% for corte in abate_diario.cortes_suinos %}
+        <li>{{corte}} kg</li>
+        {% endfor %}
+    </ul>
+
+    <ul>
+        <p>Cortes Carneiros:</p>
+    {% for corte in abate_diario.cortes_carneiros %}
+        <li>{{corte}} kg</li>
+        {% endfor %}
+    </ul>
+</ul>
+{% endfor %}
+
+{% else %}
+    <p>Nenhum abate disponível.</p>
+{% endif %}
+
+{% endblock %}
